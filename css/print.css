@@ -1,0 +1,10 @@
+#column {
+border-style: solid;
+border-width: 1px;
+margin-right: 2px;
+}
+
+a,a:visited,a:hover {
+text-decoration: none;
+color: #000000;	
+}
