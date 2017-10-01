@@ -292,8 +292,12 @@ and b.bookid = " . $this->id . ";";
 				echo("<tr><th class='property'>Originalutgåva</th><td>" . $origPublished . "</td></tr>\n");
 
 			echo("<tr><th class='property'>Kategori</th>								<td>" . $category	. "</td></tr>\n
-					<tr><th class='property'>ISBN</th>									<td><a href='https://libris.kb.se/hitlist?p=1&q=" . $isbn . "&t=v&d=libris&s=r&t=v&m=10&f=simp&spell=true'> " . $isbn	. "</a></td></tr>\n
-					<tr><th valign='top' class='property'>Författare</th>		<td> " . $authors . "</td></tr>\n
+					<tr><th class='property'>ISBN</th>									
+					<td>");
+			if (trim($isbn) != "")
+					 echo($isbn	. ", [ <a href='https://libris.kb.se/hitlist?p=1&q=" . $isbn . "&t=v&d=libris&s=r&t=v&m=10&f=simp&spell=true'>Libris</a>, 
+					<a href='https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=" . $isbn  . "'>Amazon</a> ]</td></tr>\n");
+			echo("<tr><th valign='top' class='property'>Författare</th>		<td> " . $authors . "</td></tr>\n
 					<tr><th class='property'>Bindning</th>								<td>" . $back		. "</td></tr>\n
 					<tr><th class='property'>Rum</th>									<td>" . $room		. "</td></tr>\n
 					<tr><th class='property'>Bokhylla</th>								<td>" . $bookCase . "</td></tr>\n
