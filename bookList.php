@@ -252,7 +252,7 @@ order by b.title asc, b.edition asc;";
 		if ($result->num_rows != 0)
 		{
 			echo($h1);
-			echo("<table><tr><th>Titel</th><th>Utgåva</th><th>Bindning</th><th>Rum</th><th>Hylla</th><th>Hyllplan</th></tr>\n");
+			echo("<table><tr><th>Titel</th><th>Utgåva</th><th>Bindning</th><th>Rum</th><th>Bokhylla</th><th>Hyllplan</th></tr>\n");
 			$i = 0;
 	
 			while ($row = $result->fetch_row ())
