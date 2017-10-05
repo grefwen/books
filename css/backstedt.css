@@ -19,7 +19,6 @@ body {
 }
 #center {
   float: left;
-  width: 1024px;
   text-align: left;
   margin-bottom: 5px;
   padding-left: 5px;
@@ -125,7 +124,7 @@ float: left;
 
 body, table, td {
     font-family: "Arial", serif;
-    font-size: 10pt;
+    font-size: 14pt;
 
 }
 
