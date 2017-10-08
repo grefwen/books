@@ -246,12 +246,14 @@ where
 order by b.title asc, b.edition asc;";
 		//echo("Q: " . $query . "<br>");
 		$result = $this->db->handle->query($query);
-
-
-	
-		if ($result->num_rows != 0)
-		{
-			echo("<h1>" . $h1 . " (" . $result->num_rows . " böcker)</h1>");
+		if ($result->num_rows != 0) {
+			echo ("<h1>" . $h1 . " (" . $result->num_rows);
+			if ($result->num_rows == 1)
+				echo(" bok)");
+			else
+				echo (" böcker)");
+			echo ("</h1>");
+					
 			echo("<table><tr><th>Titel</th><th>Utgåva</th><th>Bindning</th><th>Rum</th><th>Bokhylla</th><th>Hyllplan</th></tr>\n");
 			$i = 0;
 	
