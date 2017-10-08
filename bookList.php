@@ -197,14 +197,14 @@ class BookList
 						$auth .= $row[1];
 					}
 
-					$h1 = utf8_encode("<h1>") . $auth . "</h1>";
+					$h1 = $auth;
 				}
 				$query = "select am.bookID from AuthorMap am, Book b where am.authorID = " . $this->id . " and b.bookID = am.bookID order by b.title;";
 				break;		
 			}
 			default:
 			{
-				$h1 = "<h1>Alla böcker</h1>";
+				$h1 = "Alla böcker";
 				$query = "select bookID from Book order by title asc;";
 			}
 		}
@@ -251,7 +251,7 @@ order by b.title asc, b.edition asc;";
 	
 		if ($result->num_rows != 0)
 		{
-			echo($h1);
+			echo("<h1>" . $h1 . " (" . $result->num_rows . " böcker)</h1>");
 			echo("<table><tr><th>Titel</th><th>Utgåva</th><th>Bindning</th><th>Rum</th><th>Bokhylla</th><th>Hyllplan</th></tr>\n");
 			$i = 0;
 	
