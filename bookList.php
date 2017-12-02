@@ -283,7 +283,7 @@ order by b.title asc, b.edition asc;";
 				echo("<tr" . $bgcolor . ">\n
 						<td><a href='book.php?cmd=show&id=" . $id . "'>" . $title	. "</a></td>\n
 						<td class='center'> "	. $edition	. "</td>\n
-						<td>"					. $back		. "</td>\n
+						<td nowrap>"					. $back		. "</td>\n
 						<td>"					. $room		. "</td>\n
 						<td class='center'>"	. $bookCase . "</td>\n
 						<td class='center'>"	. $shelf	. "</td>\n
