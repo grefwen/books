@@ -102,26 +102,27 @@ class BookList
 
 	}
 
-	// Parse Querystring ------------------------------------------------------
-	function parseGET()
-	{
-		$this->id = trim($_GET['id']);
-		$this->cmd = $_GET['cmd'];
-		$this->row = $_GET['row'];
-	}
+        // Parse Querystring ------------------------------------------------------
+    function parseGET()
+    {
+        $this->id = trim($_GET['id']);
+        $this->cmd = $_GET['cmd'];
+        if (isset($_GET['row']))
+            $this->row = $_GET['row'];
+    }
 
-	// Parse Post -------------------------------------------------------------
-	function parsePOST()
-	{
-		$this->name = $_POST['name'];
-
-		$this->count = $_POST['count'];
-		if ($this->count != "")
-		{
-			$this->name = $_POST['listname'];
-			$this->desc = $_POST['listdesc'];
-		}		
-	}
+        // Parse Post -------------------------------------------------------------
+    function parsePOST()
+    {
+        if (isset($_POST['name']))
+            $this->name = $_POST['name'];
+        if (isset($_POST['count']))
+            $this->count = $_POST['count'];
+        if ($this->count != "") {
+            $this->name = $_POST['listname'];
+            $this->desc = $_POST['listdesc'];
+        }
+    }
 
 	// Command: Create manufacturer -----------------------------------------------
 	function cmdCreate($edit)
@@ -285,26 +286,28 @@ and b.bookid = " . $this->id . ";";
 				
 			}
 
-			echo("<tr><th class='property'>Utgåva</th>			<td>" . $edition	. "</td></tr>\n");
-			if ($published)
-				echo("<tr><th class='property'>Utgiven</th><td>" . $published . "</td></tr>\n");
-			if ($published != $origPublished)
-				echo("<tr><th class='property'>Originalutgåva</th><td>" . $origPublished . "</td></tr>\n");
-
-			echo("<tr><th class='property'>Kategori</th>								<td>" . $category	. "</td></tr>\n
+			echo ("<tr><th class='property'>Utgåva</th>			<td>" . $edition . "</td></tr>\n");
+            if ($published)
+                echo ("<tr><th class='property'>Utgiven</th><td>" . $published . "</td></tr>\n");
+            if ($published != $origPublished)
+                echo ("<tr><th class='property'>Originalutgåva</th><td>" . $origPublished . "</td></tr>\n");
+            
+            echo ("<tr><th class='property'>Kategori</th>								<td>" . $category . "</td></tr>\n
 					<tr><th class='property'>ISBN</th>									
 					<td>");
-			if (trim($isbn) != "")
-					 echo($isbn	. ", [ <a href='https://libris.kb.se/hitlist?p=1&q=" . $isbn . "&t=v&d=libris&s=r&t=v&m=10&f=simp&spell=true'>Libris</a>, 
-					<a href='https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=" . $isbn  . "'>Amazon</a> ]</td></tr>\n");
-			echo("<tr><th valign='top' class='property'>Författare</th>		<td> " . $authors . "</td></tr>\n
-					<tr><th class='property'>Bindning</th>								<td>" . $back		. "</td></tr>\n
-					<tr><th class='property'>Rum</th>									<td>" . $room		. "</td></tr>\n
+            if (trim($isbn) != "")
+                echo ($isbn . ", [ <a href='https://libris.kb.se/hitlist?p=1&q=" . $isbn . "&t=v&d=libris&s=r&t=v&m=10&f=simp&spell=true'>Libris</a>, 
+					<a href='https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=" . $isbn . "'>Amazon</a> ]</td></tr>\n");
+            if (! isset($authors))
+                $authors = "";
+            echo ("<tr><th valign='top' class='property'>Författare</th>		<td> " . $authors . "</td></tr>\n");
+            echo ("<tr><th class='property'>Bindning</th>								<td>" . $back . "</td></tr>\n
+					<tr><th class='property'>Rum</th>									<td>" . $room . "</td></tr>\n
 					<tr><th class='property'>Bokhylla</th>								<td>" . $bookCase . "</td></tr>\n
-					<tr><th class='property'>Hyllplan</th>								<td>" . $shelf	. "</td></tr>\n
-					<tr><th class='property'>Ägare</th>			<td>" . $owner	. "</td></tr>\n
-					<tr><th class='property'>Status</th>									<td>" . $status	. "</td></tr>\n");
-			echo("</table>\n");
+					<tr><th class='property'>Hyllplan</th>								<td>" . $shelf . "</td></tr>\n
+					<tr><th class='property'>Ägare</th>			<td>" . $owner . "</td></tr>\n
+					<tr><th class='property'>Status</th>									<td>" . $status . "</td></tr>\n");
+            echo ("</table>\n");
 		}
 
 		echo("<a href='bookList.php?cmd=show'>Tillbaka</a>");

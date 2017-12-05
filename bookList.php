@@ -107,26 +107,29 @@ class BookList
 
 	}
 
-	// Parse Querystring ------------------------------------------------------
-	function parseGET()
-	{
-		$this->id = trim($_GET['id']);
-		$this->cmd = $_GET['cmd'];
-		$this->row = $_GET['row'];
-	}
+        // Parse Querystring ------------------------------------------------------
+    function parseGET()
+    {
+        if (isset($_GET['id']))
+            $this->id = trim($_GET['id']);
+        if (isset($_GET['cmd']))
+            $this->cmd = $_GET['cmd'];
+        if (isset($_GET['row']))
+            $this->row = $_GET['row'];
+    }
 
-	// Parse Post -------------------------------------------------------------
-	function parsePOST()
-	{
-		$this->name = $_POST['name'];
-
-		$this->count = $_POST['count'];
-		if ($this->count != "")
-		{
-			$this->name = $_POST['listname'];
-			$this->desc = $_POST['listdesc'];
-		}		
-	}
+        // Parse Post -------------------------------------------------------------
+    function parsePOST()
+    {
+        if (isset($_POST['name']))
+            $this->name = $_POST['name'];
+        if (isset($_POST['count']))
+            $this->count = $_POST['count'];
+        if ($this->count != "") {
+            $this->name = $_POST['listname'];
+            $this->desc = $_POST['listdesc'];
+        }
+    }
 
 	// Command: Create manufacturer -----------------------------------------------
 	function cmdCreate($edit)
@@ -175,66 +178,61 @@ class BookList
 		$result = mysql_query($query);
 	}
 
-	// Command: Show manufacturer -------------------------------------------------
-	function cmdShow($cmd)
-	{	
-		$query = "";
-		$h1 = "";
-
-		switch($cmd)
-		{
-			case "author":
-			{
-				$query = "select name, surname from Author where authorid = " . $this->id . ";";
-				$result = $this->db->handle->query($query);
-
-				if ($result->num_rows != 0)
-				{
-					$row = $result->fetch_row ();
-					$auth = $row[0];
-					if (trim($row[1]) != "")
-					{	$auth .= " ";
-						$auth .= $row[1];
-					}
-
-					$h1 = $auth;
-				}
-				$query = "select am.bookID from AuthorMap am, Book b where am.authorID = " . $this->id . " and b.bookID = am.bookID order by b.title;";
-				break;		
-			}
-			default:
-			{
-				$h1 = "Alla böcker";
-				$query = "select bookID from Book order by title asc;";
-			}
-		}
-		//echo("Q: " . $query . "<br>");
-		$result = $this->db->handle->query($query);
-		$id = "";
-		if ($result->num_rows != 0)
-		{
-			
-			while ($row = $result->fetch_row ())
-			{
-				$id[] = $row[0];
-			}
-			$id = implode(",",$id);
-		}
-
-
-		
-		
-		echo("<center>\n");
-		//echo("<div id='frame'>\n");
-		//$this->layout->showHeader();
-		//$this->layout->showElector();
-		
-		?>
-		<div id="center">
+        // Command: Show manufacturer -------------------------------------------------
+    function cmdShow($cmd)
+    {
+        $query = "";
+        $h1 = "";
+        
+        switch ($cmd) {
+            case "author":
+                {
+                    $query = "select name, surname from Author where authorid = " . $this->id . ";";
+                    $result = $this->db->handle->query($query);
+                    
+                    if ($result->num_rows != 0) {
+                        $row = $result->fetch_row();
+                        $auth = $row[0];
+                        if (trim($row[1]) != "") {
+                            $auth .= " ";
+                            $auth .= $row[1];
+                        }
+                        
+                        $h1 = $auth;
+                    }
+                    $query = "select am.bookID from AuthorMap am, Book b where am.authorID = " . $this->id . " and b.bookID = am.bookID order by b.title;";
+                    break;
+                }
+            default:
+                {
+                    $h1 = "Alla böcker";
+                    $query = "select bookID from Book order by title asc;";
+                }
+        }
+        $result = $this->db->handle->query($query);
+        $id = "";
+        if ($result->num_rows != 0) {
+            $i = 0;
+            while ($row = $result->fetch_row()) {
+                if ($i ++ == 0) {
+                    $id = $row[0];
+                } else {
+                    $id .= "," . $row[0];
+                }
+            }
+        }
+        
+        echo ("<center>\n");
+        // echo("<div id='frame'>\n");
+        // $this->layout->showHeader();
+        // $this->layout->showElector();
+        
+        ?>
+<div id="center">
 		<?
-		$this->showMenu();
-
-		$query = "select b.title, r.name, l.bookshelf, l.shelf, o.name, o.surname, b.edition, s.name, bt.name, b.bookID 
+        $this->showMenu();
+        
+        $query = "select b.title, r.name, l.bookshelf, l.shelf, o.name, o.surname, b.edition, s.name, bt.name, b.bookID 
 from Book b, Room r, Location l, Owner o, Status s, BindingType bt
 where
 	b.locationID = l.locationID
@@ -244,66 +242,63 @@ where
     and bt.bindingTypeID = b.bindingTypeID
     and b.bookID in (" . $id . ") 
 order by b.title asc, b.edition asc;";
-		//echo("Q: " . $query . "<br>");
-		$result = $this->db->handle->query($query);
-		if ($result->num_rows != 0) {
-			echo ("<h1>" . $h1 . " (" . $result->num_rows);
-			if ($result->num_rows == 1)
-				echo(" bok)");
-			else
-				echo (" böcker)");
-			echo ("</h1>");
-					
-			echo("<table><tr><th>Titel</th><th>Utgåva</th><th>Bindning</th><th>Rum</th><th>Bokhylla</th><th>Hyllplan</th></tr>\n");
-			$i = 0;
-	
-			while ($row = $result->fetch_row ())
-			{
-				$title		= $row[0];
-				$room		= $row[1];
-				$bookCase	= $row[2];
-				$shelf		= $row[3];
-				$owner		= $row[4];
-				if (trim($row[5]) != "")
-				{
-					$owner .= " ";
-					$owner .= $row[5];
-				}
-				$edition	= $row[6];
-				$status		= $row[7];
-				$back		= $row[8];	
-				$id			= $row[9];
-
-
-				if (!($i % 2))
-					$bgcolor = " class='bg2'";
-				else
-					$bgcolor = "";
-
-				echo("<tr" . $bgcolor . ">\n
-						<td><a href='book.php?cmd=show&id=" . $id . "'>" . $title	. "</a></td>\n
-						<td class='center'> "	. $edition	. "</td>\n
-						<td nowrap>"					. $back		. "</td>\n
-						<td>"					. $room		. "</td>\n
-						<td class='center'>"	. $bookCase . "</td>\n
-						<td class='center'>"	. $shelf	. "</td>\n
+        // echo("Q: " . $query . "<br>");
+        $result = $this->db->handle->query($query);
+        if ($result->num_rows != 0) {
+            echo ("<h1>" . $h1 . " (" . $result->num_rows);
+            if ($result->num_rows == 1)
+                echo (" bok)");
+            else
+                echo (" böcker)");
+            echo ("</h1>");
+            
+            echo ("<table><tr><th>Titel</th><th>Utgåva</th><th>Bindning</th><th>Rum</th><th>Bokhylla</th><th>Hyllplan</th></tr>\n");
+            $i = 0;
+            
+            while ($row = $result->fetch_row()) {
+                $title = $row[0];
+                $room = $row[1];
+                $bookCase = $row[2];
+                $shelf = $row[3];
+                $owner = $row[4];
+                if (trim($row[5]) != "") {
+                    $owner .= " ";
+                    $owner .= $row[5];
+                }
+                $edition = $row[6];
+                $status = $row[7];
+                $back = $row[8];
+                $id = $row[9];
+                
+                if (! ($i % 2))
+                    $bgcolor = " class='bg2'";
+                else
+                    $bgcolor = "";
+                
+                echo ("<tr" . $bgcolor . ">\n
+						<td><a href='book.php?cmd=show&id=" . $id . "'>" . $title . "</a></td>\n
+						<td class='center'> " . $edition . "</td>\n
+						<td nowrap>" . $back . "</td>\n
+						<td>" . $room . "</td>\n
+						<td class='center'>" . $bookCase . "</td>\n
+						<td class='center'>" . $shelf . "</td>\n
 
 					</tr>\n");
-
-				$i++;
-			}
-			echo("</table>\n");
-		}
-
-		?>
+                
+                $i ++;
+            }
+            echo ("</table>\n");
+        }
+        
+        ?>
 		</div>
-		<?
-		
-		//$this->layout->showAdPane();
-		//$this->layout->showFooter();
-		echo("</div>\n");
-		echo("</center>\n");
-	}
+<?
+        
+        // $this->layout->showAdPane();
+        // $this->layout->showFooter();
+        echo ("</div>\n");
+        echo ("</center>\n");
+    }
 
 	// Command: Edit manufacturer -------------------------------------------------
 	function cmdEdit()
@@ -358,7 +353,7 @@ order by b.title asc, b.edition asc;";
 
 	function setHeader()
 	{
-			echo("\t<title>" . utf8_encode("H�pp") );
+			echo("\t<title>Häpp" );
 
 			echo("</title>\n");
 	}
