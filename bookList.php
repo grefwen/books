@@ -30,30 +30,11 @@ class BookList
 		if ($this->cmd == "")
 			$this->cmd = "show";
 
-
-/*		if (($this->id == "") && ($this->cmd != "create"))
-		{
-			echo("<span class='error'>Too few arguments. Exiting.</span>");
-			exit();
-		}
-		
-*/
 		$this->db = new dbConnect();
+		$this->db = $this->db->handle;
 		$this->table = "BookList";
-
-	//	$this->theLoginSession = new LoginSession;
-	//	$this->theLoginSession->validate();
-
 		$this->layout = new Layout();
 
-	//	$this->parser = new TextParsing();
-
-		//$this->userId = $this->theLoginSession->getUser();
-		//$this->userId = $this->userId[0];
-		//echo("User: " . $this->userId . "<br>");
-
-		 
-		
 		switch($this->cmd)
 		{
 			case "create":
@@ -121,61 +102,22 @@ class BookList
         // Parse Post -------------------------------------------------------------
     function parsePOST()
     {
-        if (isset($_POST['name']))
-            $this->name = $_POST['name'];
-        if (isset($_POST['count']))
-            $this->count = $_POST['count'];
-        if ($this->count != "") {
-            $this->name = $_POST['listname'];
-            $this->desc = $_POST['listdesc'];
+        if ($this->id == "" && isset($_POST['authorID']))
+        {
+        	$this->id = $_POST['authorID'];
         }
     }
 
-	// Command: Create manufacturer -----------------------------------------------
+	// Cofacturer -----------------------------------------------
 	function cmdCreate($edit)
 	{
-		if ($this->theLoginSession->validate()) // �r anv�ndaren inloggad?
-		{
-			if ($this->count == "true")
-			{
-				$this->dbInsert($edit);
-				exit();
-			}
-			echo("<center>\n");
-			echo("<div id='frame'>\n");
-			$this->layout->showHeader();	
-			$this->layout->showElector();
-
-			?>
-			<div id="center">
-			<?
-			if ($edit == "true")
-				echo("<h1>�ndra shoppinglista</h1>");
-			else
-				echo("<h1>Skapa ny shoppinglista</h1>");
-			$this->showEntryForm();		
-			?>
-			</div>
-			<?
-			$this->layout->showAdPane();
-			$this->layout->showFooter();
-			echo("</div>\n");
-			echo("</center>\n");
-		}
-		else
-		{
-			echo("<ul>\n<li><span class='error'>You are not logged on.</span></ul>");
-			exit();
-		}
 
 	}
 
 	// Command: Delete manufacturer -----------------------------------------------
 	function cmdDestroy()
 	{
-		$this->clearList();
-		$query = "delete from ShoppingList where id = " . $this->id . ";";
-		$result = mysql_query($query);
+
 	}
 
         // Command: Show manufacturer -------------------------------------------------
@@ -188,9 +130,9 @@ class BookList
             case "author":
                 {
                     $query = "select name, surname from Author where authorid = " . $this->id . ";";
-                    $result = $this->db->handle->query($query);
+                    $result = $this->db->query($query);
                     
-                    if ($result->num_rows != 0) {
+                    if (isset($result->num_rows) && $result->num_rows != 0) {
                         $row = $result->fetch_row();
                         $auth = $row[0];
                         if (trim($row[1]) != "") {
@@ -209,9 +151,9 @@ class BookList
                     $query = "select bookID from Book order by title asc;";
                 }
         }
-        $result = $this->db->handle->query($query);
+        $result = $this->db->query($query);
         $id = "";
-        if ($result->num_rows != 0) {
+        if (isset($result->num_rows) && $result->num_rows != 0) {
             $i = 0;
             while ($row = $result->fetch_row()) {
                 if ($i ++ == 0) {
@@ -221,30 +163,22 @@ class BookList
                 }
             }
         }
-        
-        echo ("<center>\n");
-        // echo("<div id='frame'>\n");
-        // $this->layout->showHeader();
-        // $this->layout->showElector();
-        
-        ?>
-<div id="center">
-		<?
+
         $this->showMenu();
         
         $query = "select b.title, r.name, l.bookshelf, l.shelf, o.name, o.surname, b.edition, s.name, bt.name, b.bookID 
-from Book b, Room r, Location l, Owner o, Status s, BindingType bt
-where
-	b.locationID = l.locationID
-    and l.roomID = r.roomID 
-	and b.ownerID = o.ownerID
-    and b.statusID = s.statusID 
-    and bt.bindingTypeID = b.bindingTypeID
-    and b.bookID in (" . $id . ") 
+from Book b
+left join Location l on l.locationID = b.locationID
+left join Room r on r.roomID = l.roomID
+left join Owner o on b.ownerID = o.ownerID
+left join Status s on s.statusID = b.statusID
+left join BindingType bt on bt.bindingTypeID = b.bindingTypeID 
+
+where b.bookID in (" . $id . ") 
 order by b.title asc, b.edition asc;";
-        // echo("Q: " . $query . "<br>");
-        $result = $this->db->handle->query($query);
-        if ($result->num_rows != 0) {
+         //echo("Q: " . $query . "<br>");
+        $result = $this->db->query($query);
+        if (isset($result->num_rows) && $result->num_rows != 0) {
             echo ("<h1>" . $h1 . " (" . $result->num_rows);
             if ($result->num_rows == 1)
                 echo (" bok)");
@@ -293,151 +227,75 @@ order by b.title asc, b.edition asc;";
         ?>
 		</div>
 <?
-        
-        // $this->layout->showAdPane();
-        // $this->layout->showFooter();
+
         echo ("</div>\n");
         echo ("</center>\n");
     }
+	function getOptions($id)
+	{
+		$selected = "";
+		echo ("<SELECT class='select' name='" . lcfirst ( $id ) . "ID'>\n");
+		if (trim ( $id ) == "")
+		{
+			$selected = "selected ";
+		}
+		echo ("\t<OPTION " . $selected . ">null</OPTION>\n");
+		$selected = "";
+		
+		if ($id == "Author")
+			$query = "SELECT concat (Surname, ', ', Name), " . $id . "ID from " . $id . " order by Surname asc;";
+		
+		// echo ("Options: " . $query);
+		$result = $this->db->query ( $query );
+		if ($result->num_rows != 0)
+		{
+			while ( $row = $result->fetch_row () )
+			{
+				if ($id == $row [1])
+					$selected = "selected ";
+				echo ("\t<OPTION " . $selected . "value=" . $row [1] . ">" . $row [0] . "</OPTION>\n");
+				$selected = "";
+			}
+		}
+		echo ("</SELECT>\n");
+	}
 
 	// Command: Edit manufacturer -------------------------------------------------
 	function cmdEdit()
 	{
-		// TODO: Make sure no circular manufacturers can exist.
 
-		$this->cmdCreate("true");
 	}
 
 	// Insert a new manufacturer into the database --------------------------------
 	function dbInsert($edit)
 	{
-		echo("User: " . $this->userId . "<br>");
-		echo("Name: " . $this->name . "<br>");
-		echo("Desc: " . $this->desc . "<br>");
-		
-		$this->desc =			$this->parser->parseLinebreak($this->desc);
-		$this->desc =			$this->parser->parseInvalidCharacters($this->desc);
-		$this->name =			$this->parser->parseInvalidCharacters($this->name);
 
-		if ($this->cmd == "edit")
-		{
-			$query = "update ShoppingList set name = '" . $this->name . "', description = '" . $this->desc . "' where id = " . $this->id . ";";
-		}
-		else
-		{
-			$query = "insert into ShoppingList (userid,name,description) values(" . $this->userId . ",'" . $this->name . "','" . $this->desc . "');";
-		}
-		echo("Q: " . $query . "<br>");
-		//exit();
-		
-		if(mysql_query($query))
-		{
-			if ($this->id)
-				$id = $this->id;
-			else
-				$id = mysql_insert_id();
-		}
-
-		echo("id: " . $id . "<br>");
-		//exit();
-		header("Location: shoppingList.php?cmd=show&id=" . $id);
-		exit();
 	}
 
 	function dbDelete()
 	{
-		$query = ";";
-		mysql_query($query);
-	}
 
+	}
 
 	function setHeader()
 	{
 			echo("\t<title>Häpp" );
-
 			echo("</title>\n");
 	}
 
 	function showMenu()
 	{
-		echo("<div id='menuheader'>[ <a href='bookList.php?cmd=show'>" . "Alla böcker" . "</a> ]</div><br><br>");
-	}
-
-	function showList()
-	{
-
-	}
-
-	function printList()
-	{
-
-	}
-
-	function addListItem()
-	{
-
-	}
-
-	function removeListItem()
-	{
-
-	}
-
-	function setListItemAmount()
-	{
-
-	}
-
-	function moveRow()
-	{
-	}
-
-	function clearList()
-	{
-
-	}
-
-	function populateList()
-	{
-
-	}
-
-	function getListItems()
-	{
-		echo("<SELECT name='name'>\n");
-		$query = "SELECT name from ListItem where id not in (select itemid from ListRow where shoppinglistid = " . $this->id . ") order by name;";
-
-		$result = mysql_query($query);
-		if (mysql_num_rows($result) != 0)
-		{
-			while ($row = mysql_fetch_row($result))
-			{
-				echo("<OPTION>" . $row[0] . "</OPTION>\n");
-			}			
-		}
-		echo("</SELECT>\n");
-	}
-
-	function showEntryForm()
-	{
 		?>
-<form action='shoppingList.php?cmd=create' method='post'>
+<form action='bookList.php?cmd=showAuthor' method='post'>
 <table>
-	<tr>
-		<td>Namn</td><td><input name='listname' type='edit'></td>
-	</tr>
-	<tr>
-		<td>Beskrivning</td><td><textarea name='listdesc'></textarea></td>
-	</tr>
-	<tr>
-		<td><input type='submit' value='Skapa'></td><td></td>
+	<tr><td><a href='bookList.php?cmd=show'>[ Visa alla böcker ] </a></td>
+		<td> [ Visa författare: <?= $this->getOptions("Author") ?> <input type='submit' value='Sök'> ] </td>
+		<td> [ <a href='book.php?cmd=create'>Lägg till bok ]</a>
 	</tr>
 </table>
-<input type='hidden' name='count' value='true'>
 </form>
-		<?
+<?php 
 	}
-
 }
 
 	echo("\r<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n<html>\n<head>\n"); 
