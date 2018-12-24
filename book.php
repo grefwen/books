@@ -76,11 +76,15 @@ class Book
 			if (trim ( $_POST ['title'] ) == "")
 				$title = "null";
 			else
-				$title = "'" . trim ( $_POST ['title'] ) . "'";
+			{	
+				$title = preg_replace("/'/", "\'", trim ( $_POST ['title'] ));
+				$title = "'" . $title . "'";
+			}
 			if (trim ( $_POST ['orgTitle'] ) == "")
 				$orgTitle = "null";
 			else
-				$orgTitle = "'" . trim ( $_POST ['orgTitle'] . "'" );
+				$orgTitle = preg_replace("/'/", "\'", trim ( $_POST ['orgTitle'] ));
+				$orgTitle = "'" . $orgTitle . "'";
 			if (trim ( $_POST ['isbn'] ) == "")
 				$isbn = "null";
 			else
@@ -181,7 +185,7 @@ WHERE b.bookid = " . $this->id . ";
 		
 		$result = $this->db->query ( $query );
 		
-		if ($result->num_rows != 0)
+		if (isset($result->num_rows) && $result->num_rows != 0)
 		{
 			
 			$row = $result->fetch_row ();
