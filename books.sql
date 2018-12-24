@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.20, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
 --
 -- Host: localhost    Database: books
 -- ------------------------------------------------------
--- Server version	5.7.20
+-- Server version	5.7.24
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -109,14 +109,14 @@ CREATE TABLE `Book` (
   `ownerID` bigint(20) DEFAULT NULL,
   `languageID` bigint(20) DEFAULT NULL,
   `categoryID` bigint(20) DEFAULT NULL,
-  `publisherID` bigint(20) NOT NULL DEFAULT '1',
-  `statusID` bigint(20) NOT NULL DEFAULT '1',
-  `bindingTypeID` bigint(20) NOT NULL DEFAULT '6',
+  `publisherID` bigint(20) DEFAULT '1',
+  `statusID` bigint(20) DEFAULT '1',
+  `bindingTypeID` bigint(20) DEFAULT '6',
   `published` date DEFAULT NULL,
   `originalPublished` date DEFAULT NULL,
   PRIMARY KEY (`bookID`),
   UNIQUE KEY `bookID_UNIQUE` (`bookID`)
-) ENGINE=InnoDB AUTO_INCREMENT=867 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=884 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -212,8 +212,8 @@ DROP TABLE IF EXISTS `Location`;
 CREATE TABLE `Location` (
   `locationID` bigint(20) NOT NULL AUTO_INCREMENT,
   `roomID` bigint(20) NOT NULL,
-  `bookshelf` int(11) NOT NULL,
-  `shelf` int(11) NOT NULL,
+  `bookshelf` int(11) DEFAULT NULL,
+  `shelf` int(11) DEFAULT NULL,
   PRIMARY KEY (`locationID`),
   UNIQUE KEY `locationID_UNIQUE` (`locationID`),
   UNIQUE KEY `location` (`roomID`,`bookshelf`,`shelf`)
@@ -226,7 +226,7 @@ CREATE TABLE `Location` (
 
 LOCK TABLES `Location` WRITE;
 /*!40000 ALTER TABLE `Location` DISABLE KEYS */;
-INSERT INTO `Location` VALUES (1,1,1,1),(2,1,1,2),(3,1,1,3),(12,2,2,1),(11,4,1,1),(6,5,1,1),(5,5,1,2),(4,5,1,3),(7,5,2,1),(10,6,2,4),(42,7,1,1),(41,7,1,2),(40,7,1,3),(39,7,1,4),(38,7,1,5),(37,7,1,6),(8,8,1,1),(9,8,1,2),(35,8,1,3),(22,8,2,1),(21,8,2,2),(20,8,2,3),(19,8,2,4),(18,8,2,5),(14,8,2,6),(28,8,3,1),(27,8,3,2),(26,8,3,3),(25,8,3,4),(24,8,3,5),(23,8,3,6),(36,8,4,1),(33,8,4,2),(32,8,4,3),(31,8,4,4),(30,8,4,5),(29,8,4,6),(13,8,5,1),(17,10,0,0);
+INSERT INTO `Location` VALUES (1,1,1,1),(2,1,1,2),(3,1,1,3),(12,2,2,1),(11,4,1,1),(6,5,1,1),(5,5,1,2),(4,5,1,3),(7,5,2,1),(10,6,2,4),(42,7,1,1),(41,7,1,2),(40,7,1,3),(39,7,1,4),(38,7,1,5),(37,7,1,6),(8,8,1,1),(9,8,1,2),(35,8,1,3),(22,8,2,1),(21,8,2,2),(20,8,2,3),(19,8,2,4),(18,8,2,5),(14,8,2,6),(28,8,3,1),(27,8,3,2),(26,8,3,3),(25,8,3,4),(24,8,3,5),(23,8,3,6),(36,8,4,1),(33,8,4,2),(32,8,4,3),(31,8,4,4),(30,8,4,5),(29,8,4,6),(13,8,5,1),(17,10,NULL,NULL);
 /*!40000 ALTER TABLE `Location` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -318,7 +318,7 @@ CREATE TABLE `Status` (
   `name` varchar(45) COLLATE utf8_swedish_ci NOT NULL,
   PRIMARY KEY (`statusID`),
   UNIQUE KEY `statusID_UNIQUE` (`statusID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,7 +327,7 @@ CREATE TABLE `Status` (
 
 LOCK TABLES `Status` WRITE;
 /*!40000 ALTER TABLE `Status` DISABLE KEYS */;
-INSERT INTO `Status` VALUES (1,'Okänd');
+INSERT INTO `Status` VALUES (1,'Okänd'),(2,'Utlånad'),(3,'I bokhylla');
 /*!40000 ALTER TABLE `Status` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -340,4 +340,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-03 23:30:00
+-- Dump completed on 2018-12-24 16:57:05
