@@ -208,7 +208,11 @@ WHERE b.bookid = " . $this->id . ";
 			$back = $row [10];
 			$room = $row [11];
 			$bookCase = $row [12];
+			if (trim($bookCase) == "0")
+				$bookCase = "";
 			$shelf = $row [13];
+			if (trim($shelf) == "0")
+				$shelf = "";
 			$category = $row [14];
 			$publisher = $row [15];
 			$published = "";
@@ -271,8 +275,8 @@ WHERE b.bookid = " . $this->id . ";
 				$authors = "";
 			echo ("<tr><th valign='top' class='property'>Författare</th>		<td> " . $authors . "</td></tr>\n");
 			echo ("<tr><th class='property'>Bindning</th>								<td>" . $back . "</td></tr>\n
-					<tr><th class='property'>Rum</th>									<td>" . $room . "</td></tr>\n
-					<tr><th class='property'>Bokhylla</th>								<td>" . $bookCase . "</td></tr>\n
+					<tr><th class='property'>Rum</th>									<td>" . $room . "</td></tr>\n");
+			echo("<tr><th class='property'>Bokhylla</th>								<td>" . $bookCase . "</td></tr>\n
 					<tr><th class='property'>Hyllplan</th>								<td>" . $shelf . "</td></tr>\n
 					<tr><th class='property'>Ägare</th>			<td>" . $owner . "</td></tr>\n
 					<tr><th class='property'>Status</th>									<td>" . $status . "</td></tr>\n");

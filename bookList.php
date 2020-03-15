@@ -193,7 +193,11 @@ order by b.title asc, b.edition asc;";
                 $title = $row[0];
                 $room = $row[1];
                 $bookCase = $row[2];
+                if ($bookCase == "0")
+                	$bookCase = "";
                 $shelf = $row[3];
+                if ($shelf == "0")
+                	$shelf = "";
                 $owner = $row[4];
                 if (trim($row[5]) != "") {
                     $owner .= " ";
