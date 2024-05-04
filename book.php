@@ -192,6 +192,8 @@ WHERE b.bookid = " . $this->id . ";
 			
 			$title = $row [0];
 			$originalTitle = $row [1];
+			if (trim ( $originalTitle ) == "null")
+				$originalTitle = $title;
 			if (trim ( $originalTitle ) == "")
 				$originalTitle = $title;
 			
@@ -265,8 +267,9 @@ WHERE b.bookid = " . $this->id . ";
 			if ($published != $origPublished)
 				echo ("<tr><th class='property'>Originalutgåva</th><td>" . $origPublished . "</td></tr>\n");
 			
-			echo ("<tr><th class='property'>Kategori</th>								<td>" . $category . "</td></tr>\n
-					<tr><th class='property'>ISBN</th>									
+			echo ("<tr><th class='property'>Kategori</th>								<td>" . $category . "</td></tr>\n");
+			if ($isbn != "")
+				echo("<tr><th class='property'>ISBN</th>									
 					<td>");
 			if (trim ( $isbn ) != "")
 				echo ($isbn . ", [ <a href='https://libris.kb.se/hitlist?p=1&q=" . $isbn . "&t=v&d=libris&s=r&t=v&m=10&f=simp&spell=true'>Libris</a>, 
